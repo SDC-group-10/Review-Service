@@ -37,3 +37,21 @@ npm install -g webpack
 npm install
 ```
 
+### API
+
+Crud Methods: 
+
+Create:
+  Create review: curl -X POST -h 'Content-Type: application/json' -d '{"first_name":, "listing_id":, "user_id": , "accuracy":, "communication": , "cleanliness":, "location":, "check_in":, "value":, "date":, "content":}'
+  
+Read: 
+  Get Review:
+    curl -X GET 'http://localhost:3002/reviews_service/listing/reviews/:listingid''
+
+Update:
+  Update review:
+    curl -X PUT 'http://localhost:3002/reviews_service/listing/update/:id/:review'
+
+Delete:
+  Delete review:
+    curl -X DELETE 'http://localhost:3002/reviews_service/listing/delete/:id/:review
