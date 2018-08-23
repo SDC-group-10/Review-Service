@@ -1,13 +1,20 @@
+const Promise = require('bluebird');
 
-const mysql = require('mysql');
+const initOptions = {
+  promiseLib: Promise,
+};
 
-const db = mysql.createConnection({
+const pgp = require('pg-promise')(initOptions);
+
+const connection = {
+  user: 'christiannoh',
   host: 'localhost',
-  user: 'root',
-  password: '',
   database: 'review_db',
-});
+  password: '',
+};
 
-db.connect();
+const db = pgp(connection);
+
+// const db = pgp('postgresql://localhost/review_db');
 
 module.exports = db;
