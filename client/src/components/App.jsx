@@ -1,10 +1,10 @@
 import React from 'react';
 import axios from 'axios';
 import path from 'path';
-import Pagination from  './Pagination.jsx';
+import CSSModules from 'react-css-modules';
+import Pagination from './Pagination.jsx';
 import ReviewList from './ReviewList.jsx';
 import Overview from './Overview.jsx';
-import CSSModules from 'react-css-modules';
 import styles from './app.css';
 
 class App extends React.Component {
@@ -12,7 +12,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      listing_id: props.listing_id,
+      listing_id: 12345,
       allReviews: [],
       currentReviews: [],
       currentPage: null,
@@ -41,27 +41,54 @@ class App extends React.Component {
   }
 
   getReviews() {
-    var listing_id = this.state.listing_id;
-    var self = this;
-
-    axios.get(`http://localhost:3002/api/listing/${listing_id}/reviews`)
-      .then(function(response) {
-        self.setState({allReviews: response.data});
+    const listing_id = window.location.href.split('/')[5] || 12345;
+    const self = this;
+    axios
+      .get(`http://localhost:3002/api/listing/${listing_id}/reviews`)
+      .then((response) => {
+        self.setState({ allReviews: response.data });
       })
-      .catch(function(err) {
+      .catch((err) => {
         console.log(err);
       });
   }
 
-  getRatings() { 
-    var listing_id = this.state.listing_id;
-    var self = this;
+  getRatings() {
+    const listing_id = window.location.href.split('/')[5] || 12345;
+    const self = this;
 
-    axios.get(`http://localhost:3002/api/listing/${listing_id}/overview`)
-      .then(function(response) {
-        self.setState({ratings: response.data});
+    axios
+      .get(`http://localhost:3002/api/listing/${listing_id}/overview`)
+      .then((response) => {
+        const ratingsObj = {};
+        ratingsObj.total = response.data.length;
+        const ratingsOptions = [
+          'accuracy',
+          'communication',
+          'cleanliness',
+          'location',
+          'check_in',
+          '_value',
+        ];
+        ratingsObj.accuracy = 0;
+        ratingsObj.communication = 0;
+        ratingsObj.cleanliness = 0;
+        ratingsObj.location = 0;
+        ratingsObj.check_in = 0;
+        ratingsObj._value = 0;
+        response.data.forEach((rvw) => {
+          for (let i = 0; i < ratingsOptions.length; i++) {
+            ratingsObj[ratingsOptions[i]] += rvw[ratingsOptions[i]];
+          }
+        });
+        for (const key in ratingsObj) {
+          if (key !== 'total') {
+            ratingsObj[key] = Math.floor(ratingsObj[key] / (ratingsObj.total * 20));
+          }
+        }
+        self.setState({ ratings: ratingsObj });
       })
-      .catch(function(err) {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -71,20 +98,26 @@ class App extends React.Component {
   }
 
   render() {
-    const { allReviews, currentReviews, currentPage, totalPages } = this.state;
+    const {
+      allReviews, currentReviews, currentPage, totalPages,
+    } = this.state;
     const totalReviews = allReviews.length;
 
     return (
-      <div styleName='main-container'>
+      <div styleName="main-container">
         <Overview ratings={this.state.ratings} />
-        <ReviewList reviews={currentReviews} getRef={this.getReference}/>
-        <Pagination revListRef={this.revListRef} totalRecords={totalReviews} pageNeighbours={1} onPageChanged={this.onPageChanged} />
+        <ReviewList reviews={currentReviews} getRef={this.getReference} />
+        <Pagination
+          revListRef={this.revListRef}
+          totalRecords={totalReviews}
+          pageNeighbours={1}
+          onPageChanged={this.onPageChanged}
+        />
       </div>
     );
   }
 }
 
 export default CSSModules(App, styles);
-
 
 // module.exports.App = App;

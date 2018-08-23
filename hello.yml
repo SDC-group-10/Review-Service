@@ -1,0 +1,32 @@
+config:
+  target: "http://localhost:3002"
+  phases:
+    - duration: 60
+      arrivalRate: 20
+  variables:
+    listings:
+      - [
+          1,
+          1234,
+          2134,
+          216,
+          2315,
+          456,
+          745656,
+          745674,
+          567,
+          213,
+          131,
+          43,
+          464,
+          3143513,
+          9879,
+          134,
+        ]
+scenarios:
+  - flow:
+      - loop:
+          - get:
+              url: "/api/listing/{{ $loopElement }}/reviews"
+        over: listings
+        count: 20
