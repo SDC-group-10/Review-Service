@@ -1,0 +1,7 @@
+version: "3.3"
+
+services:
+  reviews:
+    image: christiannoh/serversdc:latest
+    ports:
+      - "3002:3002"

@@ -2,15 +2,22 @@ const Promise = require('bluebird');
 
 const initOptions = {
   promiseLib: Promise,
+  error(error, e) {
+    if (e.cn) {
+      console.log('CN:', e.cn);
+      console.log('EVENT:', error.message || error);
+    }
+  },
 };
 
 const pgp = require('pg-promise')(initOptions);
 
 const connection = {
-  user: 'christiannoh',
-  host: 'localhost',
+  user: 'postgres',
+  host: 'ec2-18-144-22-246.us-west-1.compute.amazonaws.com',
   database: 'review_db',
-  password: '',
+  port: '5432',
+  password: 'password',
 };
 
 const db = pgp(connection);

@@ -44,7 +44,7 @@ class App extends React.Component {
     const listing_id = window.location.href.split('/')[5] || 12345;
     const self = this;
     axios
-      .get(`http://localhost:3002/api/listing/${listing_id}/reviews`)
+      .get(`/api/listing/${listing_id}/reviews`)
       .then((response) => {
         self.setState({ allReviews: response.data });
       })
@@ -58,7 +58,7 @@ class App extends React.Component {
     const self = this;
 
     axios
-      .get(`http://localhost:3002/api/listing/${listing_id}/overview`)
+      .get(`/api/listing/${listing_id}/overview`)
       .then((response) => {
         const ratingsObj = {};
         ratingsObj.total = response.data.length;

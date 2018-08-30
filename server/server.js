@@ -6,6 +6,8 @@ const compression = require('compression');
 const cluster = require('cluster');
 const db = require('../database/operations.js');
 
+const app = express();
+
 if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length;
 
@@ -17,7 +19,6 @@ if (cluster.isMaster) {
     cluster.fork();
   });
 } else {
-  var app = express();
   app.use(bodyParser.json());
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,6 +35,16 @@ if (cluster.isMaster) {
       }
       res.status(200).json(results);
     });
+  });
+
+  app.get('/api/loader', (req, res) => {
+    res.sendFile(path.join(__dirname, './loader/loaderIds.json'));
+  });
+
+  const loaderToken = '/../client/dist/loaderio-2fcf5b10f65c176a39b2c94ac34fb94a.txt';
+
+  app.get('/loaderio-2fcf5b10f65c176a39b2c94ac34fb94a', (req, res) => {
+    res.sendFile(path.join(__dirname, loaderToken));
   });
 
   app.get('/api/listing/:listingid/reviews', (req, res) => {

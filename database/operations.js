@@ -1,7 +1,14 @@
 const redis = require('redis');
 const db = require('./config.js');
 
-const client = redis.createClient();
+const client = redis.createClient({
+  host: '54.219.175.207',
+});
+client.auth('foobared');
+
+client.on('error', (err) => {
+  console.log(`Error ${err}`);
+});
 
 const getRatings = (listing_id, whenRatings) => {
   client.get(-listing_id, (err, result) => {
@@ -24,7 +31,7 @@ const getReviews = (listing_id, whenReviews) => {
     } else {
       const query = 'SELECT users.name, users.photo, reviews._date, reviews.content FROM users INNER JOIN reviews on users.id = reviews.user_id WHERE reviews.listing_id = $1 ORDER BY reviews._date DESC;';
       db.any(query, [listing_id]).then((data) => {
-        client.setex(listing_id, 60, JSON.stringify(data));
+        client.setex(listing_id, 3600, JSON.stringify(data));
         whenReviews(null, data);
       });
     }
@@ -43,4 +50,5 @@ const postReview = (listingId, review, callback) => {
 module.exports = {
   getRatings,
   getReviews,
+  client,
 };
